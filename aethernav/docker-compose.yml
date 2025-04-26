@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  ros-master:
+    build: .
+    command: ros2 run aethernav viz_node
+    environment:
+      - ROS_DOMAIN_ID=42
+    networks:
+      - ros-net
+
+  agent-1:
+    build: .
+    command: ros2 launch aethernav multi_agent.launch.py num_agents:=1
+    environment:
+      - ROS_DOMAIN_ID=42
+    depends_on:
+      - ros-master
+    networks:
+      - ros-net
+
+  agent-10:
+    build: .
+    command: ros2 launch aethernav multi_agent.launch.py num_agents:=10
+    environment:
+      - ROS_DOMAIN_ID=42
+    depends_on:
+      - ros-master
+    networks:
+      - ros-net
+
+  agent-50:
+    build: .
+    command: ros2 launch aethernav multi_agent.launch.py num_agents:=50
+    environment:
+      - ROS_DOMAIN_ID=42
+    depends_on:
+      - ros-master
+    networks:
+      - ros-net
+
+  monitoring:
+    build: .
+    command: ros2 run aethernav monitor_node
+    environment:
+      - ROS_DOMAIN_ID=42
+    volumes:
+      - ./metrics:/ws/metrics
+    depends_on:
+      - ros-master
+    networks:
+      - ros-net
+
+networks:
+  ros-net:
+    driver: bridge
